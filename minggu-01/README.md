@@ -20,7 +20,7 @@ Sebelum melakukan instalasi `git` pada windows, pastikan terdapat teks editor (n
 
 3. Langkah selanjutnya adalah menentukan letak instalasi git, secara default git akan terinstall di _C:\Program Files\Git_. Ubah lokasi jika ingin meletakkan instalasi git di tempat yang diinginkan.
 
-    ![Select installation destination](img/04.installer select destination.jpg)
+    ![Select installation destination](img/04.installer_select_destination.jpg)
 
     Selain menunjukkan letak instalasi, pada halaman ini juga menampilkan informasi disk space pada partisi disk yang menjadi tujuan. Klik **Next** untuk melanjutkan proses instalasi.
 
