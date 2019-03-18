@@ -117,3 +117,11 @@ Fork adalah membuat clone dari suatu repo di GitHub milik *upstream author*, dil
 15. *Upstream author* bisa menyetujui setelah melakukan review: klik pada ```Pull requests```, akan muncul PR dengan message seperti yang ditulis oleh kontributor (*Add: contributor*). Klik pada PR tersebut, review kemudian klik ```Merge pull request``` diikuti dengan ```Confirm merge```. Setelah itu, status akan berubah menjadi ```Merged```.
 
     ![PR Merged](img/18_pr_merged.png)
+
+    > *PR Closed* adalah `close a pull request` tanpa harus melakukan merge. Perubahan yang di request oleh kontributor tidak akan di merge oleh `upstream author`, hal ini bisa di karenakan perubahan yang direquest dianggap tidak relevan atau sudah tidak perlukan lagi.
+
+    ![PR Closed](img/19_pr_closed.png)
+
+## Conflict
+
+Konflik dalam git menandakan terdapat persamaan antara source file milik kontributor dan `upstream author`, hal ini bisa dikarenakan satu user dan yang lain melakukan edit/update file yang sama, sehingga `PR` tidak bisa langsung di merge. Untuk mengatasi konflik ini, kontributor harus membenarkan file yang konflik, menyocokkan dengan upstream, setelah itu lakukan proses commit dan push perubahan sehingga status conflict hilang dari halaman PR.
