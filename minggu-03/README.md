@@ -120,3 +120,85 @@ Jika diakses melalui browser akan menghasilkan output seperti gambar dibawah.
 ## Docker - Building Container Images
 
 > Referensi : [https://www.katacoda.com/courses/docker/2](https://www.katacoda.com/courses/docker/2)
+
+Pada skenario pertama, terdapat langkah-langkah untuk menjalankan container berdasarkan docker image yang sudah ada di Docker Registry. Pada skenario ini, kita akan membuat sebuah docker image yang akan menjalankan aplikasi HTML Statis menggunakan Nginx. Docker machine yang berjalan di sebut docker. Jadi jika ingin meng-akses setiap service yang berjalan menggunakan docker, akses melalui browser dan arahkan alamat ke docker bukan ke localhost atau 0.0.0.0.
+
+### Docker Images
+
+Docker images di build berdasarkan 1 buah file yang bernama Dockerfile. Dockerfile ini yang mendefinisikan semua langkah-langkah yang dibutuhkan untuk membuat sebuah Docker images yang berisi konfigurasi aplikasi dan semua aset yang dibutuhkan untuk sebuah aplikasi bisa berjalan sebagai container. Docker image ini bisa dibilang berisi semua komponen, mulai dari OS yang dipakai, Dependencies dan konfigurasi yang dibutuhkan untuk sebuah aplikasi bisa berjalan.
+
+Dengan docker image yang menampung semua kebutuhan aplikasi membuat aplikasi menggunakan docker image ini bisa berjalan di semua environment tanpa harus melakukan penyesuaian konfigurasi aplikasi.
+
+Untuk menjalankan docker container yang berisi Aplikasi HTML Statis menggunakan server Nginx hal-hal yang harus di lakukan adalah:
+
+#### Step 1 : Base image
+
+Semua docker image di mulai dari base image. Pada file `Dockerfile` gunakan syntax `FROM <image-name>:<tag>` untuk menggunakan base image yang suda ada di Docker Registery.
+
+Buat sebuah file `Dockerfile` dan isi dengan
+
+```markdown
+FROM nginx:1.11-alpine
+```
+
+Base image yang akan kita gunakan adalah server Nginx versi 1.11 dan menggunakan OS alpine. Dengan mendefinisikan tag pada base image yang digunakan akan menghindarkan kita untuk melakukan penyesuaian konfigurasi. Jika tag tidak didefinisikan, base image akan mengambil tag `latest`, dan kemungkinan terdapat perbedaan konfigurasi untuk Nginx bisa berjalan.
+
+#### Step 2 : Running Commands
+
+Command utama yang dibutuhkan untuk menjalankan docker container menggunakan base image adalah `COPY` dan `RUN`. Command-command ini digunakan untuk konfigurasi image sesuai yang kita inginkan.
+
+`RUN <command>` memungkinkan kita untuk menjalankan perintah-perintah yang ada di os linux, contohnya menjalankan perintah update package, install package ketika proses build image dijalankan. Yang perlu diperhatikan adalah hasil perintah-perintah ini akan tetap ada didalam image yang kita buat, jadi jangan jalankan perintah-perintah yang tidak penting yang menimbulkan ukuran image membengkak, semakin kecil image yang dibuat semakin bagus.
+
+`COPY <src> <dest>` Perintah yang digunakan docker untuk menyalin file/directory dari komputer local (host) ke dalam docker images. Gunakan perintah ini untuk memasukkan `source code` dan `asets` yang dibutuhkan untuk sebuah aplikasi bisa berjalan.
+
+Buat sebuah file `index.html` yang berisi syntax simple:
+
+```html
+<h1>Hello world</h1>
+```
+
+Update `Dockerfile` dan tambahkan perintah `COPY` untuk memasukkan file `index.html` ke dalam image.
+
+```markdown
+FROM nginx:1.11-alpine
+
+COPY index.html /usr/share/nginx/html
+```
+
+Perintah diatas akan memasukkan file `index.html` ke dalam folder `/usr/share/nginx/html` adalah directory pertama yang akan di akses oleh nginx ketika server ini dijalankan.
+
+#### Exposing ports
+
+Port ini dibutuhkan supaya container yang berjalan bisa diakses melalui komputer (host) yang sedang kita gunakan. Port ini digunakan container untuk berkomunikasi.
+
+`EXPOSE <port>` adalah perintah yang digunakan untuk memberitahu Docker port mana yang dibuka oleh container. Perinta `EXPOSE` ini tidak hanya digunakan untuk membuka 1 port tapi bisa menggunakan range port misal `EXPOSE 80`, `EXPOSE 8080`, atau `EXPOSE 7000-8000`.
+
+Update `Dockerfile` tambahkan perintah `EXPOSE 80`. 80 adalah port default Nginx.
+
+![Docker file](img/building-container-images/Selection_005.png)
+
+#### Default Commands
+
+Untuk mendefinisikan perintah default ketika Docker image di jalankan gunakan syntax `CMD [<command>]`. Dengan menggunakan array pada syntax `CMD` docker akan mudah menjalankan perintah dan argumen-argumen yang sudah definisikan. Contoh: `["cmd", "-a", "arga value", "-b", "argb-value"]`, docker akan menggabungkan menjadi `cmd -a "arga value" -b argb-value`, dan perintah ini yang akan dijalankan untuk menjalankan container.
+
+Secara default base image NGINX adalah `nginx -g daemon off;` didalam Docker image kita tidak perlu mendefinisikan `CMD [<command>]`.
+
+#### Building containers
+
+Setelah selesai mendefinisikan semua perintah ke dalam `Dockerfile` langkah berikutnya adalah build Dockerfile sehingga menjadi sebuah `docker image`, dengan begitu container yang kita inginkan bisa dijalankan. Gunakan perintah `docker build -t <name> .` untuk melakukan build docker image, `-t <name>` ini sangat penting untuk mendefinisikan nama docker image yang akan kita gunakan untuk menjalankan container. Opsi-opsi yang bisa digunakan ketika build container bisa dilihat di [dokumentasi](https://docs.docker.com/engine/reference/commandline/build/).
+
+![docker build](img/building-container-images/Selection_001.png)
+
+> Build docker image dengan nama tcclanjut-web
+
+### Launcing image
+
+Setelah berhasil build image yang ditandai dengan `Successfully tagged tcclanjut-web:latest`, Kita bisa menjalankan container dengan perintah `docker run -d -p 80:80 <image-id|friendly-tag-name>`. Untuk memastika docker-image sudah ada gunakan perintah `docker images`
+
+![docker images tcclanjut](img/building-container-images/Selection_002.png)
+
+![docker run tcclanjut-web](img/building-container-images/Selection_003.png)
+
+Gunakan perintah `curl` dari komputer host untuk memastikan file html sukes di jalankan pada server nginx didalam container yang kita jalankan.
+
+![curl nginx-index](img/building-container-images/Selection_004.png)
