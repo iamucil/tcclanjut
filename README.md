@@ -10,3 +10,4 @@
 2. [Praktikum minggu-02: Pull Request](minggu-02/README.md)
 3. [Praktikum minggu-03: Docker](minggu-03/README.md)
 4. [Praktikum minggu-04: Docker Networks](minggu-04/README.md)
+5. [Praktikum minggu-05: Orkestrasi Docker](minggu-05/README.md)
