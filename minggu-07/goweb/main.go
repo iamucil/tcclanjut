@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
@@ -31,24 +32,33 @@ func main() {
 		}
 		logrus.SetLevel(logLevel)
 	}
+	routerHandler := mux.NewRouter()
 
 	httpServicePort := os.Getenv("HTTP_PORT")
 	if httpServicePort == "" {
 		httpServicePort = "8080"
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("OK"))
-	})
+	// root uri
+	routerHandler.HandleFunc("/", Index)
 
-  // serve static resources
-  http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("resources/assets"))))
+	// serve static resources
+	routerHandler.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("resources/assets"))))
+
+	// router
+	routerHandler.HandleFunc("/articles/{title}/page/{page}", Article).Methods("GET")
+	routerHandler.HandleFunc("/todos/", TodoIndex).Methods("GET")
+	routerHandler.HandleFunc("/todos/{todo-id}", TodoShow).Methods("GET")
+	routerHandler.HandleFunc("/hello/", Hello).Methods("GET")
 
 	var shuttingDown bool
 	shutdownSignal := make(chan os.Signal)
 	signal.Notify(shutdownSignal, syscall.SIGINT, syscall.SIGTERM)
 
-	httpServer := &http.Server{Addr: ":" + httpServicePort}
+	httpServer := &http.Server{
+		Addr: ":" + httpServicePort,
+		Handler: routerHandler,
+	}
 
 	go func() {
 		log.Infof("HTTP Service is ready and listen on port %s", httpServicePort)
