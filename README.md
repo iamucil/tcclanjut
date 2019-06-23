@@ -11,5 +11,6 @@
 3. [Praktikum minggu-03: Docker](minggu-03/README.md)
 4. [Praktikum minggu-04: Docker Networks](minggu-04/README.md)
 5. [Praktikum minggu-05: Orkestrasi Docker](minggu-05/README.md)
-6. [Praktikum minggu-05: Orkestrasi Docker](minggu-06/README.md)
-7. [Praktikum minggu-05: Membangun Web menggunakan golang dan HTTP Server & Kubernetes](minggu-07/README.md)
+6. [Praktikum minggu-06: Orkestrasi Docker](minggu-06/README.md)
+7. [Praktikum minggu-07: Membangun Web menggunakan golang dan HTTP Server pada Docker environment](minggu-07/README.md)
+8. [Praktikum minggu-08: Menggunakan Kubernetes](minggu-08/README.md)
